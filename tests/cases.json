@@ -1,0 +1,1432 @@
+[
+  {
+    "name": "empty repository",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": []
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "totals": [],
+        "receipts": []
+      }
+    }
+  },
+  {
+    "name": "initial snapshot",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 2,
+            "files": 1
+          }
+        ],
+        "receipts": []
+      }
+    }
+  },
+  {
+    "name": "increase usages",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 3,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 1,
+                "files": 0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "delete last use",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": []
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": -2,
+                "files": -1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "file rename preserves counts",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/moved.tsx",
+              "component": "@demo/ui/Button",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 2,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "split use across files",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 1
+            },
+            {
+              "file": "src/b.tsx",
+              "component": "@demo/ui/Button",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 2,
+            "files": 2
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 0,
+                "files": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "replace component",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Input",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Input",
+            "references": 1,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": -2,
+                "files": -1
+              },
+              {
+                "component": "@demo/ui/Input",
+                "references": 1,
+                "files": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "duplicate event is no op",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 3,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 1,
+                "files": 0
+              }
+            ]
+          },
+          {
+            "id": "mr-1:sha-b",
+            "status": "duplicate",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "late replay stays at latest head",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "mr-2:sha-c",
+          "repo": "demo/shop",
+          "base": "sha-b",
+          "head": "sha-c",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 5
+            }
+          ]
+        },
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-c",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 5,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 1,
+                "files": 0
+              }
+            ]
+          },
+          {
+            "id": "mr-2:sha-c",
+            "status": "applied",
+            "base": "sha-b",
+            "head": "sha-c",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 2,
+                "files": 0
+              }
+            ]
+          },
+          {
+            "id": "mr-1:sha-b",
+            "status": "duplicate",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "row order does not break deduplication",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "b",
+              "component": "@demo/ui/Button",
+              "count": 2
+            },
+            {
+              "file": "a",
+              "component": "@demo/ui/Button",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "a",
+              "component": "@demo/ui/Button",
+              "count": 2
+            },
+            {
+              "file": "b",
+              "component": "@demo/ui/Button",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 4,
+            "files": 2
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "@demo/ui/Button",
+                "references": 2,
+                "files": 1
+              }
+            ]
+          },
+          {
+            "id": "mr-1:sha-b",
+            "status": "duplicate",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": []
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "totals and deltas are sorted",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": []
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "z",
+              "count": 2
+            },
+            {
+              "file": "src/a.tsx",
+              "component": "a",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-b",
+        "totals": [
+          {
+            "component": "a",
+            "references": 2,
+            "files": 1
+          },
+          {
+            "component": "z",
+            "references": 2,
+            "files": 1
+          }
+        ],
+        "receipts": [
+          {
+            "id": "mr-1:sha-b",
+            "status": "applied",
+            "base": "sha-a",
+            "head": "sha-b",
+            "delta": [
+              {
+                "component": "a",
+                "references": 2,
+                "files": 1
+              },
+              {
+                "component": "z",
+                "references": 2,
+                "files": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "conflicting retry rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "event-id-conflict:mr-1:sha-b"
+    }
+  },
+  {
+    "name": "stale baseline rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "old",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "stale-base:mr-1:sha-b"
+    }
+  },
+  {
+    "name": "cross repo rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "other",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "repository-mismatch"
+    }
+  },
+  {
+    "name": "same head rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-a",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "reused-head:mr-1:sha-b"
+    }
+  },
+  {
+    "name": "old head cannot be reused",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "x",
+          "repo": "demo/shop",
+          "base": "sha-b",
+          "head": "sha-a",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "reused-head:x"
+    }
+  },
+  {
+    "name": "zero is invalid row count",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 0
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "count-must-be-positive"
+    }
+  },
+  {
+    "name": "negative rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": -1
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "count-must-be-positive"
+    }
+  },
+  {
+    "name": "row duplicates rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          },
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "duplicate-file-component"
+    }
+  },
+  {
+    "name": "empty component rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": " ",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:component"
+    }
+  },
+  {
+    "name": "empty file rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:file"
+    }
+  },
+  {
+    "name": "large row rejected",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 100000001
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "count-limit"
+    }
+  },
+  {
+    "name": "integer overflow guarded",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "0",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "1",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "2",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "3",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "4",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "5",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "6",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "7",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "8",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "9",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          },
+          {
+            "file": "10",
+            "component": "@demo/ui/Button",
+            "count": 100000000
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "total-limit"
+    }
+  },
+  {
+    "name": "unsupported protocol",
+    "input": {
+      "schema_version": 2,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "unsupported-schema-version"
+    }
+  },
+  {
+    "name": "empty repo",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:repo"
+    }
+  },
+  {
+    "name": "empty revision",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": " ",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:revision"
+    }
+  },
+  {
+    "name": "empty event id",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:id"
+    }
+  },
+  {
+    "name": "empty base",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "",
+          "head": "sha-b",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:base"
+    }
+  },
+  {
+    "name": "empty head",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 2
+          }
+        ]
+      },
+      "changes": [
+        {
+          "id": "mr-1:sha-b",
+          "repo": "demo/shop",
+          "base": "sha-a",
+          "head": "",
+          "usages": [
+            {
+              "file": "src/a.tsx",
+              "component": "@demo/ui/Button",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": "empty:head"
+    }
+  },
+  {
+    "name": "malformed shape",
+    "input": {},
+    "expected": {
+      "ok": false,
+      "error": "invalid-json-or-shape"
+    }
+  },
+  {
+    "name": "fractional count",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": 1.5
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "invalid-json-or-shape"
+    }
+  },
+  {
+    "name": "string count",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "src/a.tsx",
+            "component": "@demo/ui/Button",
+            "count": "2"
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": "invalid-json-or-shape"
+    }
+  },
+  {
+    "name": "unicode identifiers",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "页面/表单.tsx",
+            "component": "组件/按钮",
+            "count": 3
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "totals": [
+          {
+            "component": "组件/按钮",
+            "references": 3,
+            "files": 1
+          }
+        ],
+        "receipts": []
+      }
+    }
+  },
+  {
+    "name": "tuple identities do not collide",
+    "input": {
+      "schema_version": 1,
+      "initial": {
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "usages": [
+          {
+            "file": "a|b",
+            "component": "c",
+            "count": 2
+          },
+          {
+            "file": "a",
+            "component": "b|c",
+            "count": 2
+          }
+        ]
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": true,
+      "report": {
+        "schema_version": 1,
+        "repo": "demo/shop",
+        "revision": "sha-a",
+        "totals": [
+          {
+            "component": "b|c",
+            "references": 2,
+            "files": 1
+          },
+          {
+            "component": "c",
+            "references": 2,
+            "files": 1
+          }
+        ],
+        "receipts": []
+      }
+    }
+  }
+]
