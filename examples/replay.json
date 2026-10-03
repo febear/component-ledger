@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "initial": {
+    "repo": "demo/shop",
+    "revision": "sha-a",
+    "usages": [
+      {
+        "file": "src/a.tsx",
+        "component": "@demo/ui/Button",
+        "count": 2
+      }
+    ]
+  },
+  "changes": [
+    {
+      "id": "mr-1:sha-b",
+      "repo": "demo/shop",
+      "base": "sha-a",
+      "head": "sha-b",
+      "usages": [
+        {
+          "file": "src/a.tsx",
+          "component": "@demo/ui/Button",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "mr-2:sha-c",
+      "repo": "demo/shop",
+      "base": "sha-b",
+      "head": "sha-c",
+      "usages": [
+        {
+          "file": "src/a.tsx",
+          "component": "@demo/ui/Button",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "id": "mr-1:sha-b",
+      "repo": "demo/shop",
+      "base": "sha-a",
+      "head": "sha-b",
+      "usages": [
+        {
+          "file": "src/a.tsx",
+          "component": "@demo/ui/Button",
+          "count": 3
+        }
+      ]
+    }
+  ]
+}
