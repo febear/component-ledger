@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "report": {
+    "schema_version": 1,
+    "repo": "demo/shop",
+    "revision": "sha-c",
+    "totals": [
+      {
+        "component": "@demo/ui/Button",
+        "references": 5,
+        "files": 1
+      }
+    ],
+    "receipts": [
+      {
+        "id": "mr-1:sha-b",
+        "status": "applied",
+        "base": "sha-a",
+        "head": "sha-b",
+        "delta": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 1,
+            "files": 0
+          }
+        ]
+      },
+      {
+        "id": "mr-2:sha-c",
+        "status": "applied",
+        "base": "sha-b",
+        "head": "sha-c",
+        "delta": [
+          {
+            "component": "@demo/ui/Button",
+            "references": 2,
+            "files": 0
+          }
+        ]
+      },
+      {
+        "id": "mr-1:sha-b",
+        "status": "duplicate",
+        "base": "sha-a",
+        "head": "sha-b",
+        "delta": []
+      }
+    ]
+  }
+}
