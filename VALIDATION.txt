@@ -1,0 +1,9 @@
+Validation date: 2026-10-03
+Moon: 0.1.20260920 (914d7da)
+Node: v24.19.0
+moon check --target js --deny-warn: passed
+moon test --target js --deny-warn: 34 passed, 0 failed
+moon build --target js --deny-warn: passed
+python3 scripts/verify_cli.py: 34 fixture cases, 40 seeded history invariants, 1 malformed JSON case passed
+node dist/component-ledger.cjs < examples/replay.json: final references=5, late retry=duplicate
+No real repository integration, concurrent database writes, contest approval, publishing, or payout was tested or claimed.
