@@ -1,0 +1,5 @@
+import {
+  "febear/component-ledger" @ledger,
+}
+
+pkgtype(kind: "executable")
